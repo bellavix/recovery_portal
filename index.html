@@ -1,182 +1,251 @@
-async function startRecovery(){
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Recovery Terminal</title>
+
+<style>
+
+body{
+margin:0;
+background:#090909;
+color:#98ff98;
+font-family:Consolas,monospace;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+#terminal{
+width:760px;
+background:#111;
+padding:30px;
+border:2px solid #2d6b2d;
+box-shadow:0 0 20px rgba(0,255,0,.15);
+}
+
+h1{
+margin-top:0;
+color:#b7ff8b;
+letter-spacing:2px;
+}
+
+input{
+width:320px;
+padding:10px;
+background:#000;
+color:#98ff98;
+border:1px solid #3b7b3b;
+font-family:Consolas,monospace;
+font-size:16px;
+margin-top:10px;
+}
+
+button{
+margin-top:15px;
+padding:10px 20px;
+background:#205620;
+border:none;
+color:white;
+cursor:pointer;
+font-family:Consolas,monospace;
+}
+
+button:hover{
+background:#2f7430;
+}
+
+#output{
+margin-top:25px;
+white-space:pre-line;
+line-height:1.5;
+min-height:150px;
+}
+
+#progress{
+display:none;
+margin-top:20px;
+}
+
+a{
+color:#b7ff8b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="terminal">
+
+<h1>RECOVERY TERMINAL</h1>
+
+<div id="prompt">
+User
+</div>
+
+<input id="input" autocomplete="off">
+
+<br>
+
+<button onclick="submitInput()">VERIFY</button>
+
+<div id="progress">
+<pre id="bar"></pre>
+</div>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+
+let stage=0;
+
+const USER="BELLA";
+const ARCHIVE="A-0727";
+
+function submitInput(){
+
+const value=document.getElementById("input").value.trim().toUpperCase();
+
+const input=document.getElementById("input");
+const prompt=document.getElementById("prompt");
 const output=document.getElementById("output");
-const loading=document.getElementById("loading");
-const progress=document.getElementById("progress");
 
-loading.style.display="block";
+if(stage===0){
 
-output.innerHTML=
-`Archive verified.
+if(value!==USER){
 
-Beginning reconstruction...
+output.innerText=
+"User not found.\n\nRecovery access denied.";
 
-Archive Integrity:
-64%
-
-Preparing recovery...`;
-
-for(let i=0;i<=100;i+=10){
-
-progress.textContent=
-"█".repeat(i/10)+"□".repeat(10-(i/10))+" "+i+"%";
-
-await delay(230);
+return;
 
 }
 
-await delay(500);
+output.innerText=
+"User verified.";
 
-progress.textContent="";
+prompt.innerText="Archive ID";
 
-const sequence=[
+input.value="";
 
-"Integrity reached 100%.",
+stage=1;
 
-"",
+return;
 
-"Final verification...",
+}
 
-"",
+if(stage===1){
 
-"Archive reconstruction failed.",
+if(value!==ARCHIVE){
 
-"",
+output.innerText=
+"Archive not found.\n\nRecovery cancelled.";
 
+return;
+
+}
+
+input.style.display="none";
+document.querySelector("button").style.display="none";
+
+output.innerText=
+"Archive verified.\n\nBeginning recovery...";
+
+startRecovery();
+
+}
+
+}
+
+function startRecovery(){
+
+const progress=document.getElementById("progress");
+const bar=document.getElementById("bar");
+const output=document.getElementById("output");
+
+progress.style.display="block";
+
+let percent=64;
+
+const interval=setInterval(()=>{
+
+percent++;
+
+bar.innerText=
+"█".repeat(Math.floor((percent-64)/4))+
+"□".repeat(9-Math.floor((percent-64)/4))+
+" "+percent+"%";
+
+if(percent>=100){
+
+clearInterval(interval);
+
+progress.style.display="none";
+
+corruption();
+
+}
+
+},140);
+
+}
+
+function corruption(){
+
+const output=document.getElementById("output");
+
+const messages=[
+
+"G3n3r4ting rec0v3ry...",
+"G3n#r@ting recov###...",
 "Retrying...",
-
-"",
-
-"Integrity mismatch detected.",
-
-"",
-
+"Generating recovery...",
+"Recov### fail###",
 "Retrying...",
-
-"",
-
-"Reconstructing archive...",
-
-"",
-
-"Rec0nstructing arch1ve...",
-
-"",
-
-"R̴e̴t̸r̴y̸i̵n̶g̵...",
-
-"",
-
-"Memory index unreadable.",
-
-"",
-
-"Attempting repair...",
-
-"",
-
-"Att3mpting repa1r...",
-
-"",
-
-"Attempting repair...",
-
-"",
-
-"Recovery interrupted.",
-
-"",
-
+"Verifying archive...",
+"Restoring preserved memory...",
+"Corru_ption de_tected...",
 "Retrying...",
+"Recovery complete.",
 
 "",
-
-"Rebuilding metadata...",
-
+"Archive Integrity: 100%",
+"Recovery Status: COMPLETE",
 "",
-
-"Rebui1ding metadat@...",
-
+"Recovered archive:",
 "",
-
-"Restoring archive...",
-
-"",
-
-"Rest0ring arch1ve...",
-
-"",
-
-"Retrying...",
-
-"",
-
-"Retrying...",
-
-"",
-
-"Recovery successful.",
-
-"",
-
-"Archive Integrity",
-
-"100%",
-
-"",
-
-"Status: Stable",
-
-"Cleanup: Cancelled",
-
-"Priority archive preserved.",
-
-"",
-
-"Generating recovered archive...",
-
-"",
-
-"□□□□□□□□□□ 0%"
+"<a href='PUT YOUR LETTER LINK HERE' target='_blank'>ARCHIVE_0727</a>"
 
 ];
 
-output.innerHTML="";
+let i=0;
 
-for(const line of sequence){
+const type=setInterval(()=>{
 
-output.innerHTML+=line+"\n";
+output.innerHTML=messages.slice(0,i+1).join("<br>");
 
-await delay(650);
+i++;
 
-}
+if(i>=messages.length){
 
-let gen=0;
-
-while(gen<=10){
-
-output.innerHTML=output.innerHTML.replace(/█*□* \d+%|□□□□□□□□□□ 0%$/m,"");
-
-output.innerHTML+=
-"\n"+
-"█".repeat(gen)+"□".repeat(10-gen)+" "+(gen*10)+"%";
-
-await delay(180);
-
-gen++;
+clearInterval(type);
 
 }
 
-await delay(700);
-
-output.innerHTML+=
-
-"\n\nRecovered archive generated.\n";
-
-loading.style.display="none";
-
-document.getElementById("download").href=LETTER_URL;
-
-document.getElementById("letter").style.display="block";
+},700);
 
 }
+
+</script>
+
+</body>
+
+</html>
