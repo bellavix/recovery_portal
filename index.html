@@ -1,0 +1,182 @@
+async function startRecovery(){
+
+const output=document.getElementById("output");
+const loading=document.getElementById("loading");
+const progress=document.getElementById("progress");
+
+loading.style.display="block";
+
+output.innerHTML=
+`Archive verified.
+
+Beginning reconstruction...
+
+Archive Integrity:
+64%
+
+Preparing recovery...`;
+
+for(let i=0;i<=100;i+=10){
+
+progress.textContent=
+"█".repeat(i/10)+"□".repeat(10-(i/10))+" "+i+"%";
+
+await delay(230);
+
+}
+
+await delay(500);
+
+progress.textContent="";
+
+const sequence=[
+
+"Integrity reached 100%.",
+
+"",
+
+"Final verification...",
+
+"",
+
+"Archive reconstruction failed.",
+
+"",
+
+"Retrying...",
+
+"",
+
+"Integrity mismatch detected.",
+
+"",
+
+"Retrying...",
+
+"",
+
+"Reconstructing archive...",
+
+"",
+
+"Rec0nstructing arch1ve...",
+
+"",
+
+"R̴e̴t̸r̴y̸i̵n̶g̵...",
+
+"",
+
+"Memory index unreadable.",
+
+"",
+
+"Attempting repair...",
+
+"",
+
+"Att3mpting repa1r...",
+
+"",
+
+"Attempting repair...",
+
+"",
+
+"Recovery interrupted.",
+
+"",
+
+"Retrying...",
+
+"",
+
+"Rebuilding metadata...",
+
+"",
+
+"Rebui1ding metadat@...",
+
+"",
+
+"Restoring archive...",
+
+"",
+
+"Rest0ring arch1ve...",
+
+"",
+
+"Retrying...",
+
+"",
+
+"Retrying...",
+
+"",
+
+"Recovery successful.",
+
+"",
+
+"Archive Integrity",
+
+"100%",
+
+"",
+
+"Status: Stable",
+
+"Cleanup: Cancelled",
+
+"Priority archive preserved.",
+
+"",
+
+"Generating recovered archive...",
+
+"",
+
+"□□□□□□□□□□ 0%"
+
+];
+
+output.innerHTML="";
+
+for(const line of sequence){
+
+output.innerHTML+=line+"\n";
+
+await delay(650);
+
+}
+
+let gen=0;
+
+while(gen<=10){
+
+output.innerHTML=output.innerHTML.replace(/█*□* \d+%|□□□□□□□□□□ 0%$/m,"");
+
+output.innerHTML+=
+"\n"+
+"█".repeat(gen)+"□".repeat(10-gen)+" "+(gen*10)+"%";
+
+await delay(180);
+
+gen++;
+
+}
+
+await delay(700);
+
+output.innerHTML+=
+
+"\n\nRecovered archive generated.\n";
+
+loading.style.display="none";
+
+document.getElementById("download").href=LETTER_URL;
+
+document.getElementById("letter").style.display="block";
+
+}
