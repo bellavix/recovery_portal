@@ -72,7 +72,7 @@ button:hover{
     margin-top:30px;
     white-space:pre-line;
     line-height:1.6;
-    min-height:170px;
+    min-height:220px;
 }
 
 #progress{
@@ -84,6 +84,7 @@ a{
     color:#c5ff92;
     text-decoration:none;
     font-weight:bold;
+    font-size:18px;
 }
 
 a:hover{
@@ -104,9 +105,15 @@ a:hover{
 
 Manual Recovery Required
 
-Recovered fragments have been verified.
+Recovered Fragments:
+2 / 3
 
-To continue, identify the owner of the preserved memory archive.
+One fragment remains unavailable.
+
+Complete verification to reconstruct
+the preserved memory.
+
+Identify the archive owner below.
 
 </p>
 
@@ -132,31 +139,32 @@ Archive Owner
 
 <script>
 
-const OWNER = "BELLA";
-const ARCHIVE = "A-0727";
+const OWNER="BELLA";
+const ARCHIVE="A-0727";
 
-let stage = 0;
+let stage=0;
 
 function verify(){
 
-    const input = document.getElementById("input");
-    const value = input.value.trim().toUpperCase();
+    const input=document.getElementById("input");
+    const value=input.value.trim().toUpperCase();
 
-    const output = document.getElementById("output");
-    const prompt = document.getElementById("prompt");
+    const output=document.getElementById("output");
+    const prompt=document.getElementById("prompt");
 
     if(stage===0){
 
         if(value!==OWNER){
 
-            output.innerHTML =
-            "User not found.\n\nRecovery access denied.";
+            output.innerHTML=
+            "Owner not found.\n\nRecovery access denied.";
 
             return;
+
         }
 
-        output.innerHTML =
-        "Owner verified.\n\nSearching available priority archives...";
+        output.innerHTML=
+        "Owner verified.\n\nSearching priority archives...";
 
         input.value="";
 
@@ -164,54 +172,59 @@ function verify(){
 
         setTimeout(function(){
 
-            prompt.innerHTML =
-            "Archive ID<br><br>Enter the archive identifier to continue the restoration process.";
+            prompt.innerHTML=
+            "Archive ID<br><br>Enter the identifier of the archive to complete fragment verification.";
 
         },900);
 
         return;
+
     }
 
     if(stage===1){
 
         if(value!==ARCHIVE){
 
-            output.innerHTML =
+            output.innerHTML=
             "Archive not found.\n\nNo priority archive matching the provided identifier exists.\n\nRecovery cancelled.";
 
             return;
+
         }
 
         input.style.display="none";
         document.querySelector("button").style.display="none";
 
-        output.innerHTML =
-        "Owner verified.\n\nPriority archive located.\n\nPreparing recovery...";
+        output.innerHTML=
+        "Owner verified.\n\nPriority archive located.\n\nFragment 03 verified.\n\nArchive integrity restored to 64%.\n\nPreparing final recovery...";
 
         startRecovery();
+
     }
 
 }
 
 function startRecovery(){
 
-    const progress = document.getElementById("progress");
-    const loading = document.getElementById("loading");
+    const progress=document.getElementById("progress");
+    const loading=document.getElementById("loading");
 
     progress.style.display="block";
 
-    let percent = 64;
+    let percent=64;
 
-    const interval = setInterval(function(){
+    const interval=setInterval(function(){
 
         percent++;
 
-        const filled = Math.floor((percent-64)/4);
+        let filled=Math.floor((percent-64)/4);
 
-        loading.textContent =
-        "█".repeat(filled) +
-        "□".repeat(9-filled) +
-        " " + percent + "%";
+        if(filled>9) filled=9;
+
+        loading.textContent=
+        "█".repeat(filled)+
+        "□".repeat(9-filled)+
+        " "+percent+"%";
 
         if(percent>=100){
 
@@ -223,15 +236,15 @@ function startRecovery(){
 
         }
 
-    },140);
+    },120);
 
 }
 
 function beginRecovery(){
 
-    const output = document.getElementById("output");
+    const output=document.getElementById("output");
 
-    const messages = [
+    const messages=[
 
 "Recovering preserved memory...",
 
@@ -239,9 +252,9 @@ function beginRecovery(){
 
 "Retrying...",
 
-"Reading preserved object...",
+"Reading preserved memory...",
 
-"C0rruption detected.",
+"C0RRUPTION DETECTED.",
 
 "Retrying...",
 
@@ -253,19 +266,27 @@ function beginRecovery(){
 
 "Retrying...",
 
-"G3nerating recovery output...",
+"G3n3rating recov3ry output...",
+
+"Corru_ption d3t3cted.",
+
+"Retrying...",
+
+"Verifying restored memory...",
 
 "Corruption detected.",
 
 "Retrying...",
 
-"Verifying restored object...",
+"Verifying restored memory...",
 
-"Corruption detected.",
+"Reading preserved memory...",
+
+"Integrity mismatch detected.",
 
 "Retrying...",
 
-"Verifying restored object...",
+"Verifying restored memory...",
 
 "...",
 
@@ -279,7 +300,7 @@ function beginRecovery(){
 
 "",
 
-"Recovered Object",
+"Recovered Memory",
 
 "",
 
@@ -289,9 +310,9 @@ function beginRecovery(){
 
     let i=0;
 
-    const typer = setInterval(function(){
+    const typer=setInterval(function(){
 
-        output.innerHTML = messages.slice(0,i+1).join("<br>");
+        output.innerHTML=messages.slice(0,i+1).join("<br>");
 
         i++;
 
@@ -301,7 +322,7 @@ function beginRecovery(){
 
         }
 
-    },700);
+    },650);
 
 }
 
