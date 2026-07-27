@@ -1,78 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Recovery Terminal</title>
+<title>MAPLE Recovery Terminal</title>
 
 <style>
 
 body{
-margin:0;
-background:#090909;
-color:#98ff98;
-font-family:Consolas,monospace;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+    margin:0;
+    background:#080808;
+    color:#9cff9c;
+    font-family:Consolas,monospace;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
 #terminal{
-width:760px;
-background:#111;
-padding:30px;
-border:2px solid #2d6b2d;
-box-shadow:0 0 20px rgba(0,255,0,.15);
+    width:760px;
+    background:#111;
+    border:2px solid #2e6d2e;
+    padding:30px;
+    box-shadow:0 0 20px rgba(0,255,0,.12);
 }
 
 h1{
-margin-top:0;
-color:#b7ff8b;
-letter-spacing:2px;
+    margin-top:0;
+    letter-spacing:2px;
+    color:#c5ff92;
+}
+
+p{
+    line-height:1.6;
+}
+
+#prompt{
+    margin-top:20px;
+    line-height:1.5;
 }
 
 input{
-width:320px;
-padding:10px;
-background:#000;
-color:#98ff98;
-border:1px solid #3b7b3b;
-font-family:Consolas,monospace;
-font-size:16px;
-margin-top:10px;
+    width:330px;
+    padding:10px;
+    background:#000;
+    border:1px solid #3d7d3d;
+    color:#9cff9c;
+    font-family:Consolas,monospace;
+    font-size:16px;
+    margin-top:10px;
 }
 
 button{
-margin-top:15px;
-padding:10px 20px;
-background:#205620;
-border:none;
-color:white;
-cursor:pointer;
-font-family:Consolas,monospace;
+    margin-top:18px;
+    padding:10px 22px;
+    background:#255d25;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-family:Consolas,monospace;
 }
 
 button:hover{
-background:#2f7430;
+    background:#367d36;
 }
 
 #output{
-margin-top:25px;
-white-space:pre-line;
-line-height:1.5;
-min-height:150px;
+    margin-top:30px;
+    white-space:pre-line;
+    line-height:1.6;
+    min-height:170px;
 }
 
 #progress{
-display:none;
-margin-top:20px;
+    display:none;
+    margin-top:20px;
 }
 
 a{
-color:#b7ff8b;
+    color:#c5ff92;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover{
+    text-decoration:underline;
 }
 
 </style>
@@ -83,20 +98,32 @@ color:#b7ff8b;
 
 <div id="terminal">
 
-<h1>RECOVERY TERMINAL</h1>
+<h1>MAPLE RECOVERY TERMINAL</h1>
+
+<p>
+
+Manual Recovery Required
+
+Recovered fragments have been verified.
+
+To continue, identify the owner of the preserved memory archive.
+
+</p>
 
 <div id="prompt">
-User
+
+Archive Owner
+
 </div>
 
 <input id="input" autocomplete="off">
 
 <br>
 
-<button onclick="submitInput()">VERIFY</button>
+<button onclick="verify()">VERIFY</button>
 
 <div id="progress">
-<pre id="bar"></pre>
+<pre id="loading"></pre>
 </div>
 
 <div id="output"></div>
@@ -105,142 +132,176 @@ User
 
 <script>
 
-let stage=0;
+const OWNER = "BELLA";
+const ARCHIVE = "A-0727";
 
-const USER="BELLA";
-const ARCHIVE="A-0727";
+let stage = 0;
 
-function submitInput(){
+function verify(){
 
-const value=document.getElementById("input").value.trim().toUpperCase();
+    const input = document.getElementById("input");
+    const value = input.value.trim().toUpperCase();
 
-const input=document.getElementById("input");
-const prompt=document.getElementById("prompt");
-const output=document.getElementById("output");
+    const output = document.getElementById("output");
+    const prompt = document.getElementById("prompt");
 
-if(stage===0){
+    if(stage===0){
 
-if(value!==USER){
+        if(value!==OWNER){
 
-output.innerText=
-"User not found.\n\nRecovery access denied.";
+            output.innerHTML =
+            "User not found.\n\nRecovery access denied.";
 
-return;
+            return;
+        }
 
-}
+        output.innerHTML =
+        "Owner verified.\n\nSearching available priority archives...";
 
-output.innerText=
-"User verified.";
+        input.value="";
 
-prompt.innerText="Archive ID";
+        stage=1;
 
-input.value="";
+        setTimeout(function(){
 
-stage=1;
+            prompt.innerHTML =
+            "Archive ID<br><br>Enter the archive identifier to continue the restoration process.";
 
-return;
+        },900);
 
-}
+        return;
+    }
 
-if(stage===1){
+    if(stage===1){
 
-if(value!==ARCHIVE){
+        if(value!==ARCHIVE){
 
-output.innerText=
-"Archive not found.\n\nRecovery cancelled.";
+            output.innerHTML =
+            "Archive not found.\n\nNo priority archive matching the provided identifier exists.\n\nRecovery cancelled.";
 
-return;
+            return;
+        }
 
-}
+        input.style.display="none";
+        document.querySelector("button").style.display="none";
 
-input.style.display="none";
-document.querySelector("button").style.display="none";
+        output.innerHTML =
+        "Owner verified.\n\nPriority archive located.\n\nPreparing recovery...";
 
-output.innerText=
-"Archive verified.\n\nBeginning recovery...";
-
-startRecovery();
-
-}
+        startRecovery();
+    }
 
 }
 
 function startRecovery(){
 
-const progress=document.getElementById("progress");
-const bar=document.getElementById("bar");
-const output=document.getElementById("output");
+    const progress = document.getElementById("progress");
+    const loading = document.getElementById("loading");
 
-progress.style.display="block";
+    progress.style.display="block";
 
-let percent=64;
+    let percent = 64;
 
-const interval=setInterval(()=>{
+    const interval = setInterval(function(){
 
-percent++;
+        percent++;
 
-bar.innerText=
-"█".repeat(Math.floor((percent-64)/4))+
-"□".repeat(9-Math.floor((percent-64)/4))+
-" "+percent+"%";
+        const filled = Math.floor((percent-64)/4);
 
-if(percent>=100){
+        loading.textContent =
+        "█".repeat(filled) +
+        "□".repeat(9-filled) +
+        " " + percent + "%";
 
-clearInterval(interval);
+        if(percent>=100){
 
-progress.style.display="none";
+            clearInterval(interval);
 
-corruption();
+            progress.style.display="none";
+
+            beginRecovery();
+
+        }
+
+    },140);
 
 }
 
-},140);
+function beginRecovery(){
 
-}
+    const output = document.getElementById("output");
 
-function corruption(){
+    const messages = [
 
-const output=document.getElementById("output");
+"Recovering preserved memory...",
 
-const messages=[
+"Integrity mismatch detected.",
 
-"G3n3r4ting rec0v3ry...",
-"G3n#r@ting recov###...",
 "Retrying...",
-"Generating recovery...",
-"Recov### fail###",
+
+"Reading preserved object...",
+
+"C0rruption detected.",
+
 "Retrying...",
-"Verifying archive...",
-"Restoring preserved memory...",
-"Corru_ption de_tected...",
+
+"Repairing damaged archive...",
+
+"Generating recovery output...",
+
+"ERROR",
+
 "Retrying...",
-"Recovery complete.",
+
+"G3nerating recovery output...",
+
+"Corruption detected.",
+
+"Retrying...",
+
+"Verifying restored object...",
+
+"Corruption detected.",
+
+"Retrying...",
+
+"Verifying restored object...",
+
+"...",
+
+"Success.",
 
 "",
+
 "Archive Integrity: 100%",
+
 "Recovery Status: COMPLETE",
+
 "",
-"Recovered archive:",
+
+"Recovered Object",
+
 "",
-"<a href='PUT YOUR LETTER LINK HERE' target='_blank'>ARCHIVE_0727</a>"
+
+"<a href='PUT YOUR LETTER LINK HERE' target='_blank'>0727</a>"
 
 ];
 
-let i=0;
+    let i=0;
 
-const type=setInterval(()=>{
+    const typer = setInterval(function(){
 
-output.innerHTML=messages.slice(0,i+1).join("<br>");
+        output.innerHTML = messages.slice(0,i+1).join("<br>");
 
-i++;
+        i++;
 
-if(i>=messages.length){
+        if(i>=messages.length){
 
-clearInterval(type);
+            clearInterval(typer);
 
-}
+        }
 
-},700);
+    },700);
 
 }
 
